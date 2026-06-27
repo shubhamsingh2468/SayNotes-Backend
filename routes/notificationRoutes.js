@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { scheduleNotification } = require('../controllers/notificationController');
-const { protect } = require('../middleware/authMiddleware');
+import { scheduleNotification } from '../controllers/notificationController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 router.post('/schedule', protect, scheduleNotification);
 
-module.exports = router;
+export default router;

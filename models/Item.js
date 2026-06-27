@@ -1,49 +1,42 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const itemSchema = new mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
     },
-    itemType: {
+    type: {
       type: String,
-      enum: ['Note', 'Task', 'Reminder', 'CalendarEvent'],
-      required: [true, 'Please specify itemType'],
+      enum: ['Note', 'Task', 'Reminder', 'Event'],
+      required: true,
     },
     title: {
       type: String,
-      required: [true, 'Please add a title'],
+      required: true,
     },
     content: {
       type: String,
-      default: '',
+      required: true,
     },
-    isCompleted: {
-      type: Boolean,
-      default: false,
-    },
-    priority: {
+    status: {
       type: String,
-      enum: ['Low', 'Medium', 'High'],
-      default: 'Low',
-    },
-    dueDate: {
-      type: Date, // For Tasks and Reminders
+      enum: ['pending_confirmation', 'active', 'completed', 'cancelled'],
+      default: 'pending_confirmation',
     },
     startTime: {
-      type: Date, // For Calendar Events
+      type: Date,
     },
     endTime: {
-      type: Date, // For Calendar Events
+      type: Date,
     },
-    location: {
-      type: String, // For Calendar Events
+    googleEventId: {
+      type: String,
     },
-    isSynced: {
+    checkInTriggered: {
       type: Boolean,
-      default: true, // If created on server, it's synced. Client overrides this if offline
+      default: false,
     },
   },
   {
@@ -51,4 +44,4 @@ const itemSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('Item', itemSchema);
+export default mongoose.model('Item', itemSchema);

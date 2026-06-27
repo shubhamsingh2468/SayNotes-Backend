@@ -1,8 +1,10 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const User = require('../models/User');
-const Item = require('../models/Item');
+import dotenv from 'dotenv';
+dotenv.config();
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import User from '../models/User.js';
+import Item from '../models/Item.js';
+import connectDB from '../config/db.js';
 
 const runSeed = async () => {
   try {
@@ -24,40 +26,39 @@ const runSeed = async () => {
 
     console.log('Created test user:', testUser.email);
 
-    // 2. Create Mock Items for the user
+    // 2. Create Mock Items for the user (Adjusted schema fields for ES module versions)
     const items = [
       {
-        user: testUser._id,
-        itemType: 'Note',
+        userId: testUser._id,
+        type: 'Note',
         title: 'Project Ideas',
         content: '1. SayNote Mobile App\n2. AI Content Generator',
-        isSynced: true,
+        status: 'active',
       },
       {
-        user: testUser._id,
-        itemType: 'Task',
+        userId: testUser._id,
+        type: 'Task',
         title: 'Finish backend API',
         content: 'Complete the Node.js/Express backend for SayNote MVP.',
-        isCompleted: false,
-        priority: 'High',
-        dueDate: new Date(Date.now() + 86400000), // Due in 1 day
-        isSynced: true,
+        status: 'pending_confirmation',
+        startTime: new Date(Date.now() + 86400000), // Due in 1 day
       },
       {
-        user: testUser._id,
-        itemType: 'Reminder',
+        userId: testUser._id,
+        type: 'Reminder',
         title: 'Buy Groceries',
-        dueDate: new Date(Date.now() + 3600000), // Due in 1 hour
-        isSynced: true,
+        content: 'Remember to grab some milk',
+        startTime: new Date(Date.now() + 3600000), // Due in 1 hour
+        status: 'active',
       },
       {
-        user: testUser._id,
-        itemType: 'CalendarEvent',
+        userId: testUser._id,
+        type: 'Event',
         title: 'Weekly Sync',
-        location: 'Google Meet',
+        content: 'Sync with the team',
         startTime: new Date(Date.now() + 86400000), // Tomorrow
         endTime: new Date(Date.now() + 86400000 + 3600000), // + 1 hour
-        isSynced: true,
+        status: 'active',
       },
     ];
 
@@ -71,12 +72,11 @@ const runSeed = async () => {
 };
 
 // If run directly via CLI
-if (require.main === module) {
-  const connectDB = require('../config/db');
+if (process.argv[1] && process.argv[1].endsWith('seed.js')) {
   connectDB().then(async () => {
     await runSeed();
     process.exit();
   });
 }
 
-module.exports = runSeed;
+export default runSeed;

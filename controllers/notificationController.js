@@ -1,7 +1,7 @@
 // @desc    Schedule a delayed notification
 // @route   POST /api/v1/notifications/schedule
 // @access  Private
-const scheduleNotification = async (req, res) => {
+export const scheduleNotification = async (req, res) => {
   try {
     const { title, message, delayMs } = req.body;
 
@@ -31,5 +31,3 @@ const scheduleNotification = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-module.exports = { scheduleNotification };

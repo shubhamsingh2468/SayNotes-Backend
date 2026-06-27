@@ -1,8 +1,17 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const runSeed = require('./scripts/seed');
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import runSeed from './scripts/seed.js';
+
+import authRoutes from './routes/authRoutes.js';
+import syncRoutes from './routes/syncRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import itemRoutes from './routes/itemRoutes.js';
+
+import { startCheckInWorker } from './workers/checkInWorker.js';
 
 const app = express();
 
@@ -12,9 +21,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
-app.use('/api/v1/auth', require('./routes/authRoutes'));
-app.use('/api/v1/sync', require('./routes/syncRoutes'));
-app.use('/api/v1/notifications', require('./routes/notificationRoutes'));
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/sync', syncRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api', itemRoutes); // Exposing at /api as per instructions
 
 // Basic route
 app.get('/', (req, res) => {
@@ -28,6 +38,9 @@ connectDB().then(async (isMemory) => {
     console.log('Detected Memory Server. Auto-seeding database...');
     await runSeed();
   }
+  
+  // Start the background worker
+  startCheckInWorker();
   
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

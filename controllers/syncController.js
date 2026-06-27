@@ -1,9 +1,9 @@
-const Item = require('../models/Item');
+import Item from '../models/Item.js';
 
 // @desc    Sync offline items
 // @route   POST /api/v1/sync
 // @access  Private
-const syncItems = async (req, res) => {
+export const syncItems = async (req, res) => {
   try {
     const { items } = req.body; // Array of offline items
 
@@ -54,5 +54,3 @@ const syncItems = async (req, res) => {
     res.status(500).json({ message: 'Server Error during sync', error: error.message });
   }
 };
-
-module.exports = { syncItems };

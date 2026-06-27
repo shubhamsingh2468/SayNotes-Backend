@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { syncItems } = require('../controllers/syncController');
-const { protect } = require('../middleware/authMiddleware');
+import { syncItems } from '../controllers/syncController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 router.post('/', protect, syncItems);
 
-module.exports = router;
+export default router;
