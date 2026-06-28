@@ -6,7 +6,11 @@ import {
   confirmItem,
   getDailyBriefing,
   getCalendarAgenda,
-  updateItemStatus
+  updateItemStatus,
+  getNotes,
+  getNoteById,
+  updateNote,
+  deleteNote
 } from '../controllers/itemController.js';
 
 const router = express.Router();
@@ -25,5 +29,11 @@ router.get('/calendar/agenda', protect, getCalendarAgenda);
 
 // Route: PATCH /api/items/:id/status
 router.patch('/items/:id/status', protect, updateItemStatus);
+
+// Note specific endpoints
+router.get('/notes', protect, getNotes);
+router.get('/notes/:id', protect, getNoteById);
+router.put('/notes/:id', protect, updateNote);
+router.delete('/notes/:id', protect, deleteNote);
 
 export default router;

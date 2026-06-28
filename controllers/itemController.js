@@ -196,3 +196,103 @@ export const updateItemStatus = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+/**
+ * @desc    Get all items (notes) for the authenticated user, optionally filtered by category
+ * @route   GET /api/notes
+ */
+export const getNotes = async (req, res) => {
+  try {
+    const query = { userId: req.user._id };
+    
+    if (req.query.category) {
+      query.category = req.query.category;
+    }
+
+    const notes = await Item.find(query).sort({ createdAt: -1 });
+    res.status(200).json(notes);
+  } catch (error) {
+    console.error('Error in getNotes:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+/**
+ * @desc    Get a specific item (note) by ID
+ * @route   GET /api/notes/:id
+ */
+export const getNoteById = async (req, res) => {
+  try {
+    const note = await Item.findById(req.params.id);
+    
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+
+    // Ownership verification
+    if (note.userId.toString() !== req.user.id && note.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Forbidden: You do not have permission to access this note' });
+    }
+
+    res.status(200).json(note);
+  } catch (error) {
+    console.error('Error in getNoteById:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+/**
+ * @desc    Update a specific item (note) by ID
+ * @route   PUT /api/notes/:id
+ */
+export const updateNote = async (req, res) => {
+  try {
+    const note = await Item.findById(req.params.id);
+    
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+
+    // Ownership verification
+    if (note.userId.toString() !== req.user.id && note.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Forbidden: You do not have permission to modify this note' });
+    }
+
+    const updatedNote = await Item.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json(updatedNote);
+  } catch (error) {
+    console.error('Error in updateNote:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+/**
+ * @desc    Delete a specific item (note) by ID
+ * @route   DELETE /api/notes/:id
+ */
+export const deleteNote = async (req, res) => {
+  try {
+    const note = await Item.findById(req.params.id);
+    
+    if (!note) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+
+    // Ownership verification
+    if (note.userId.toString() !== req.user.id && note.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this note' });
+    }
+
+    await note.deleteOne();
+
+    res.status(200).json({ message: 'Note removed' });
+  } catch (error) {
+    console.error('Error in deleteNote:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};

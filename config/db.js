@@ -8,7 +8,7 @@ const connectDB = async () => {
     let mongoUri = process.env.MONGO_URI;
 
     // Use memory server if local connection to allow seamless testing without a local MongoDB installation
-    if (mongoUri.includes('localhost') || mongoUri.includes('127.0.0.1')) {
+    if (process.env.NODE_ENV !== 'production' && (!mongoUri || mongoUri.includes('localhost') || mongoUri.includes('127.0.0.1'))) {
       mongoServer = await MongoMemoryServer.create();
       mongoUri = mongoServer.getUri();
       console.log('Started MongoDB Memory Server for seamless testing.');

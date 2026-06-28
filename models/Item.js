@@ -38,6 +38,9 @@ const itemSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    category: {
+      type: String,
+    },
   },
   {
     timestamps: true,
